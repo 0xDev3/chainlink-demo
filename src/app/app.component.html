@@ -1,47 +1,56 @@
-<div class="w-screen h-screen flex flex-col items-center text-slate-600
-   justify-center bg-gradient-to-b from-violet-50 to-white0">
-  <div class="bg-white max-w-lg w-full rounded-lg p-8 shadow-sm flex flex-col">
-    <span class="text-xl font-semibold uppercase
-       items-center flex flex-row gap-x-3 text-fuchsia-600">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-      </svg>
-      
-      Net worth calculator
-    </span>
-    <div class="pt-3 w-full uppercase font-medium text-xs">
-      Enter the address you're checking net worth for
-    </div>
-    <input [formControl]="addressInputForm" class="w-full mt-2 rounded-lg border py-3 px-4" type="text">
-    <button (click)="fetchNetWorthClicked()" 
-      class="mt-4 py-3 bg-pink-600 rounded-lg hover:bg-pink-800 transition-all
-       text-white uppercase text-sm font-semibold">Fetch net worth</button>
-  </div>
-  <div class="bg-white max-w-lg mt-4 w-full rounded-lg p-8 shadow-sm flex flex-col">
-    <span class="uppercase text-lg font-bold flex flex-row gap-x-3 text-violet-700">      
-      Asset breakdown
-    </span>
-    <div class="pt-4 w-full">
-      
-    </div>
-    <ng-container *ngIf="assets$ | withStatus | async as assets">
-      <ng-container *ngIf="assets.value as assets">
-        {{assets}}
-      </ng-container>
-      <ng-container *ngIf="assets.error as error">
-        {{error}}
-      </ng-container>
-      <ng-container *ngIf="assets.loading">
-        Loading...
-      </ng-container>
+<div
+  class="w-screen min-h-screen bg-gradient-to-b from-pink-50 to-white flex flex-col gap-y-12 items-center justify-center">
+  <div class="text-3xl font-semibold flex mt-32 flex-row items-center gap-x-4">Dev3 <img class="inline h-8"
+      src="../assets/chainlink.png" alt="" srcset=""> SDK Demo</div>
+
+  <div class="max-w-5xl w-full grid grid-cols-2 gap-8">
+    <div>ETH Feeds Example</div>
+    <div></div>
+    <ng-container *ngIf="ethFeeds$ as feeds">
+      <div *ngFor="let feed of feeds" class="bg-white flex flex-col rounded-lg p-6 shadow-sm text-xs">
+        <div class="grid grid-cols-2 gap-4" *ngIf="feed | async as uFeed">
+          <div class="font-semibold">Feed name</div>
+          <div>{{uFeed.dataFeedName}}</div>
+          <div class="font-semibold">Answer</div>
+          <div>{{uFeed.answer}}</div>
+          <div class="font-semibold">Round</div>
+          <div>{{uFeed.roundID}}</div>
+        </div>
+      </div>
     </ng-container>
   </div>
 
-  <div class="mt-4 flex flex-col items-center">
-    <div class="uppercase text-xs font-medium text-slate-400">Powered by</div>
-    <div class="mt-3">
-      <img class="h-5" src="../assets/chainlink.png" alt="" srcset="">
-    </div>
+  <div class="max-w-5xl w-full grid grid-cols-2 gap-8">
+    <div>AVAX Feeds Example</div>
+    <div></div>
+    <ng-container *ngIf="avaxFeeds$ as feeds">
+      <div *ngFor="let feed of feeds" class="bg-white flex flex-col rounded-lg p-6 shadow-sm text-xs">
+        <div class="grid grid-cols-2 gap-4" *ngIf="feed | async as uFeed">
+          <div class="font-semibold">Feed name</div>
+          <div>{{uFeed.dataFeedName}}</div>
+          <div class="font-semibold">Answer</div>
+          <div>{{uFeed.answer}}</div>
+          <div class="font-semibold">Round</div>
+          <div>{{uFeed.roundID}}</div>
+        </div>
+      </div>
+    </ng-container>
   </div>
-  
+
+  <div class="max-w-5xl mb-32 w-full grid grid-cols-2 gap-8">
+    <div>BSC Feeds Example</div>
+    <div></div>
+    <ng-container *ngIf="bscFeeds$ as feeds">
+      <div *ngFor="let feed of feeds" class="bg-white flex flex-col rounded-lg p-6 shadow-sm text-xs">
+        <div class="grid grid-cols-2 gap-4" *ngIf="feed | async as uFeed">
+          <div class="font-semibold">Feed name</div>
+          <div>{{uFeed.dataFeedName}}</div>
+          <div class="font-semibold">Answer</div>
+          <div>{{uFeed.answer}}</div>
+          <div class="font-semibold">Round</div>
+          <div>{{uFeed.roundID}}</div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
 </div>

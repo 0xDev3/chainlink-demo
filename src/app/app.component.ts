@@ -3,54 +3,42 @@ import { BigNumber, ethers } from 'ethers';
 import { Dev3ChainlinkSDK } from 'dev3-chainlink-sdk/lib/src/dev3-sdk'
 import { RoundDataModel } from 'dev3-chainlink-sdk/lib/types/price-feeds-model';
 import { FormControl, Validators } from '@angular/forms';
-import { BehaviorSubject, catchError, combineLatest, debounceTime, from, map, of, repeat, retry, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, from, map, Observable, of, repeat, retry, switchMap, throwError } from 'rxjs';
+import { PriceFeedsETH } from 'dev3-chainlink-sdk/lib/data-feeds/ETH-data-feed'
+import { PriceFeedsAVAX } from 'dev3-chainlink-sdk/lib/data-feeds/avax-data-feed'
+import { PriceFeedsBSC } from 'dev3-chainlink-sdk/lib/data-feeds/bsc-data-feed'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'chainlink-demo';
 
-  sdk = new Dev3ChainlinkSDK("https://eth.llamarpc.com")
-  provider = new ethers.providers.JsonRpcProvider("https://eth.llamarpc.com")
+  ethSDK = new Dev3ChainlinkSDK("https://eth.llamarpc.com", new PriceFeedsETH())
+  avaxSDK = new Dev3ChainlinkSDK("https://endpoints.omniatech.io/v1/avax/mainnet/public", new PriceFeedsAVAX())
+  bscSDK = new Dev3ChainlinkSDK("https://bsc.rpc.blxrbdn.com", new PriceFeedsBSC())
+
+  ethFeeds$: Observable<RoundDataModel>[] = [
+    from(this.ethSDK.getFromOracle(this.ethSDK.feeds.AAVE_ETH)),
+    from(this.ethSDK.getFromOracle(this.ethSDK.feeds.COINBASE_BORED_APE_YACHT_CLUB_FLOOR_PRICE_ETH)),
+    from(this.ethSDK.getFromOracle(this.ethSDK.feeds.ALCX_ETH)),
+    from(this.ethSDK.getFromOracle(this.ethSDK.feeds.AMPL_USD)),
+  ]
+
+  avaxFeeds$: Observable<RoundDataModel>[] = [
+    from(this.avaxSDK.getFromOracle(this.avaxSDK.feeds.AAPL_USD)),
+    from(this.avaxSDK.getFromOracle(this.avaxSDK.feeds.NFLX_USD)),
+    from(this.avaxSDK.getFromOracle(this.avaxSDK.feeds.BRL_USD)),
+  ]
+
+  bscFeeds$: Observable<RoundDataModel>[] = [
+    from(this.bscSDK.getFromOracle(this.bscSDK.feeds.DAI_BNB)),
+    from(this.bscSDK.getFromOracle(this.bscSDK.feeds.ADA_BNB)),
+    from(this.bscSDK.getFromOracle(this.bscSDK.feeds.ARPA_USD)),
+  ]
+
   
-  addressInputForm = new FormControl('', [Validators.required])
 
-  querySub = new BehaviorSubject("")
-  query$ = this.querySub.asObservable()
-
-  assets$ = this.query$.pipe(
-    switchMap(query => {
-      if(!query) { return of("error") }
-      if(query.startsWith('0x') && (query.length === 42)) {
-        return from(this.provider.getBalance(query)).pipe(
-          map(wei => wei),
-          switchMap(res => { return combineLatest(from(this.sdk.getFromOracle(this.sdk.ethFeeds.ETH_USD)), of(res)) }),
-          map(([price, balance]) => {
-            const normalizedBalance = ethers.utils.formatUnits(balance, 18)
-            const normalizedPrice = ethers.utils.formatUnits(price.answer, 8)
-            const total = ethers.utils.formatUnits(price.answer.mul(balance), 18 + 8)
-
-            return `${normalizedBalance} ETH @ ${normalizedPrice} USD / ETH
-             is $${total}` 
-          })
-        )
-      } else {
-        return of("error")
-      }
-    }),
-  )
-
-
-  fetchNetWorthClicked() {
-    const value = this.addressInputForm.value
-    if(!value) { return }
-    this.querySub.next(value)
-  }
-
-  ngOnInit() {
-    
-  }
 }
